@@ -173,3 +173,4 @@ cython_debug/
 
 # non project type files
 /ignore_this/
+/final_project/credentials.json
