@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="generator" content="CoffeeCup HTML Editor (www.coffeecup.com)">
+    <meta name="dcterms.created" content="Tue, 12 Jan 2021 19:31:44 GMT">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+      <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+    <title>London Borough Crime Rates and Venues</title>
+
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+    <!--[if IE]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+      <style>
+
+      </style>
+  </head>
+  <body>
+  <div class="w3-main">
+    <div class="w3-container w3-black w3-center">
+  	   <h1 class="w3-text-white">Capstone Project - London Borough Crime Rates and Venues</h1>
+    </div>
+
+     <div class="w3-container w3-black w3-center">
+  	   <h3 class="w3-text-white">Applied Data Science Capstone by IBM/Coursera</h3>
+         <h2 class="w3-text-white">A project by Ratatosk</h2>
+    </div>
+    </br>
+    <div class="w3-panel w3-center w3-grey">
+  	   <h2>Table of Contents</h2>
+    </div>
+
+    <div class="w3-container w3-center">
+  	   <a href="#intro" class="w3-button w3-ripple w3-large" style="width:30%;">Introduction</a>
+			 <br />
+		<a href="#data" class="w3-button w3-ripple w3-large" style="width:30%;">Data</a>
+			 <br />
+		<a href="#method" class="w3-button w3-ripple w3-large" style="width:30%;">Methodology</a>
+			 <br />
+		<a href="#results" class="w3-button w3-ripple w3-large" style="width:30%;">Results</a>
+			 <br />
+		<a href="#discuss" class="w3-button w3-ripple w3-large" style="width:30%;">Discussion</a>
+			 <br />
+		<a href="#conclusion" class="w3-button w3-ripple w3-large" style="width:30%;">Conclusion</a>
+			 <br />
+    </div>
+
+    <div class="w3-panel w3-center w3-grey" id="intro">
+  	   <h2>1. Introduction</h2>
+    </div>
+    <div class="w3-container">
+  	   <h3>1.1 Background</h3>
+  	   <p>Rising crime rates in some areas have been linked to a lack of amenities and 'things to do' for young people in those areas.</p>
+	   <p>For example, access to green spaces such as parks may help <a href="https://theconversation.com/can-parks-help-cities-fight-crime-118322">reduce crime</a>, and reducing youth clubs may <a href="https://www.barnardos.org.uk/news/new-research-draws-link-between-youth-service-cuts-and-rising-knife-crime">increase crime rates.</a></p>
+	   <p>If there is a link between types of venue and crime rate, then this can help with planning in the future for which venues to build and fund in order to prevent crime, and which to avoid. It might also suggest areas that require more police attention and patrols if there is a concentration of certain types of venues in those areas.</p>
+    </div>
+    <div class="w3-container">
+  	   <h3>1.2 Problem</h3>
+	   <p>This report will attempt to investigate whether crime rates in London boroughs are related to the number or type of venues in those boroughs. It will do this by trying to answer two questions.</p>
+	   <h4>1.2.1 Question 1:</h4>
+	   <p>Are crime rates lower or higher in areas with more venues? Are they higher or lower depending on the number of venues of different types?</p>
+	   <h4>1.2.2 Question 2: </h4>
+	   <p>Are crime rates affected by the types of venues in an area? Does the combination of types of venues in an area have an impact on crime rates?</p>
+    </div>
+    <div class="w3-container">
+  	   <h3>1.3 Audience</h3>
+	   <p>Stakeholders are local and UK government, police, town planners, community and volunteer groups.</p>
+    </div>
+
+    <div class="w3-panel w3-center w3-grey" id="data">
+  	   <h2>2. Data Sources and Cleaning</h2>
+    </div>
+
+      <div class="w3-container">
+          <h3>2.1 Data Sources</h3>
+          <p>The data on crimes in all London boroughs for the past 24 months was gathered by the Metropolitan Police and is available through the London Datastore <a href="https://data.london.gov.uk/dataset/recorded_crime_summary">here</a>. I used the data from December 2018 through November 2020. </p>
+          <p>The estimated population for each London borough was scraped from <a href="https://en.wikipedia.org/wiki/List_of_London_boroughs">Wikipedia.</a></p>
+          <p>Geometric data for London boroughs came from two sources, their central coordinates from the Office for National Statistics’ (ONS) <a href="https://geoportal.statistics.gov.uk/datasets/local-authority-districts-april-2019-uk-bfc/data?geometry=-64.265%2C46.017%2C59.397%2C63.434">Geoportal</a>, and a GeoJson file of their polygons from a repository by <a href="http://martinjc.github.io/UK-GeoJSON/">martinjc on Github</a>.</p>
+          <p>The data on venues and venue types in each borough came from <a href="https://foursquare.com/">Foursquare</a>, via the API.</p>
+      </div>
+
+      <div class="w3-container">
+          <h3>2.2 Data Cleaning</h3>
+          <p>The City of London was excluded as it is not technically a London Borough, and it has a very different population and venue profile to the rest of London.</p>
+          <p>I discovered the Wikipedia table had coordinates for each London borough, but when I plotted these on a map, they were not central to each borough, and so would not be ideal for a search. This is why I used the coordinates from the ONS instead.</p>
+          <p>In order to determine the proper search radius for the call to the API, I plotted a circle on a map of the largest borough by area in London, Bromley. The radius needed to cover the whole of Bromley was 12500 m, so that was the radius used.</p>
+          <div class="w3-card w3-center"><img src="report_images/image001.png" alt="Map of Bromley with search circle">
+          <h6 class="w3-center">Map of Bromley with search circle</h6></div>
+
+          <p>With a radius that big, my searches inevitably overlapped with other boroughs, especially with the smaller boroughs. I wrote a function to check each venue was in the borough being searched before it was added to the list.</p>
+          <p>I decided to restrict the venues examined to four categories, offering various options of 'things to do', rather than categories that offered only 'places to be' like restaurants or bars. This was to reduce the numbers of calls and results from the API, as gathering <em>all</em> venues per borough was clearly not feasible.</p>
+          <p>I used the categories available through the API, to give rough estimations.</p>
+          <p>The four categories are as follows:</p>
+          <dl>
+              <dt><strong>Arts & Entertainment</strong></dt>
+              <dd>for example, cinemas, music venues, bowling alleys, museums</dd>
+              <dt><strong>Outdoor Recreation</strong></dt>
+              <dd>for example, parks, tennis courts, football fields</dd>
+              <dt><strong>Study</strong></dt>
+              <dd>Universities, colleges and libraries (not schools)</dd>
+              <dt><strong>Social and Religious</strong></dt>
+              <dd>Community centres, social clubs and religious centres</dd>
+          </dl>
+          <p>The venue limit for this type of search through the API is 50, and I discovered I was hitting the cap for most of my searches. I therefore added 5 extra random smaller search circles per borough, to pick up extras and get more of a flavour of venue types in each borough. This added some duplicates to my dataset as well as new venues, and so I removed all duplicates.</p>
+          <p>As a side note, as part of investigating duplicates, I discovered some ‘unique ids’ for venues seem to be repeated in the dataset, or the data is not very reliable. I found one unique venue id was repeated in my data 20 times, in 20 different boroughs, all with different coordinates. This id was assigned to London Zoo, which is in fact on the border between Camden and Westminster, and not in the other 18 boroughs! I am therefore unsure as to the total reliability of the Foursquare data, while believing it still gives a good general idea.</p>
+      </div>
+
+      <div class="w3-panel w3-center w3-grey" id="method">
+          <h2>3. Methodology</h2>
+      </div>
+
+      <div class="w3-container">
+          <h3>3.1 Calculations</h3>
+          <p>Some basic calculations were needed to prepare the data for analysis</p>
+          <p>I totalled the number of crimes, and (using the data from Wikipedia) calculated the crime rate per 100,000 people as follows:</p>
+          <div class="w3-center"><p>crime rate = (number of crimes / population) x 100000</p></div>
+          <div class="w3-card w3-center"><img src="report_images/image002.png" alt="Dataframe showing crime rate calculated">
+          <h6>Dataframe showing crime rate calculated</h6></div>
+
+          <p>I created two dataframes, one for each question.</p>
+          <p>The first contained the number of venues per borough per 100,000 people, calculated in the same way as crime rate.</p>
+          <div class="w3-card w3-center"><img src="report_images/image003.png" alt="Dataframe showing number of venues per capita calculated">
+          <h6>Dataframe showing number of venues per capita calculated</h6></div>
+
+          <p>The second contained all the venues I had found, ready to be used for K-means clustering.</p>
+          <div class="w3-card w3-center"><img src="report_images/image004.png" alt="Dataframe showing some of the collected venues">
+          <h6>Dataframe showing some of the collected venues</h6></div>
+
+      </div>
+
+      <div class="w3-container">
+          <h3>3.2 Exploratory Data Analysis</h3>
+      </div>
+
+      <div class="w3-container">
+          <h4>3.2.1 Question 1</h4>
+          <p>I first used df.corr() to check for correlations, and found possible correlations between numbers of venues per 100,000 people and crime rate.</p>
+          <div class="w3-card w3-center"><img src="report_images/image005.png" alt="Dataframe of correlations">
+          <h6>Dataframe of correlations</h6></div>
+
+          <p>I then plotted these to explore them further</p>
+      </div>
+
+      <div class="w3-third">
+          <div class="w3-card">
+              <img src="report_images/image006.png" style="width:100%" alt="Total Venues vs Crime Rate">
+              <div class="w3-container">
+                  <h6>Total Venues vs Crime Rate</h6>
+              </div>
+          </div>
+      </div>
+      <div class="w3-third">
+          <div class="w3-card">
+              <img src="report_images/image007.png" style="width:100%" alt="Art Venues vs Crime Rate">
+              <div class="w3-container">
+                  <h6>Art Venues vs Crime Rate</h6>
+              </div>
+          </div>
+      </div>
+      <div class="w3-third">
+          <div class="w3-card">
+              <img src="report_images/image008.png" style="width:100%" alt="Study Venues vs Crime Rate">
+              <div class="w3-container">
+                  <h6>Study Venues vs Crime Rate</h6>
+              </div>
+          </div>
+      </div>
+      <div class="w3-third">
+                    <div class="w3-card">
+              <img src="report_images/image009.png" style="width:100%" alt="Social and Religious Venues vs Crime Rate">
+              <div class="w3-container">
+                  <h6>Social and Religious Venues vs Crime Rate</h6>
+              </div>
+          </div>
+      </div>
+
+      <div class="w3-third">
+                        <div class="w3-card">
+              <img src="report_images/image010.png" style="width:100%" alt="Outdoor Recreation Venues vs Crime Rate">
+              <div class="w3-container">
+                  <h6>Outdoor Recreation Venues vs Crime Rate</h6>
+              </div>
+          </div>
+      </div>
+
+      <div class="w3-container">
+          <h4>3.2.2 Question 2</h4>
+      </div>
+      <div class="w3-container">
+          <h5>3.2.2.1 K-means clustering</h5>
+          <p>As I was going to use K-means clustering to divide the boroughs into categories, I first had to prepare the data for that by replacing categorical data with numbers and calculating means.</p>
+          <p>I then calculated the top 10 most common venues per borough.</p>
+          <div class="w3-card w3-center">
+              <img src="report_images/image011.png" alt="Dataframe with top 10 venue types">
+              <h6>Dataframe with top 10 venue types</h6>
+          </div>
+          <p>Before performing k-means clustering, I used the elbow method to determine the optimal value for k, and as it wasn't entirely clear, I followed it by using the silhouette score which confirmed an optimal value for k as 2.</p>
+          <div class="w3-card w3-center">
+              <img src="report_images/image012.png" alt="The elbow method showing the optimal k">
+              <h6>The elbow method showing optimal k</h6>
+          </div>
+          <div class="w3-card w3-center">
+              <img src="report_images/image013.png" alt="Values for k vs silhouette scores">
+              <h6>Values for k vs silhouette scores</h6>
+          </div>
+          <p>I performed the k-means clustering using a value of 2 for k, and examined the clusters formed.</p>
+          <p>I named these clusters ‘Fun London’ and ‘Sensible London’.</p>
+          <p>Both have churches as their most common venue, and most boroughs have a park as their second most common venue, but after that they diverge.</p>
+          <p>Fun London has more art galleries, music venues, theatres and outdoor spaces like gardens and playgrounds among its top 10 venues.</p>
+          <div class="w3-card w3-center">
+              <img src="report_images/image014.png" alt="Sample of Fun London">
+              <h6>Sample of Fun London</h6>
+          </div>
+          <p>Sensible London has fewer of these and more colleges, libraries and sports fields.</p>
+          <div class="w3-card w3-center">
+              <img src="report_images/image015.png" alt="Sample of Sensible London">
+              <h6>Sample of Sensible London</h6>
+          </div>
+          <p>I also examined the total number of each type of venue per cluster.</p>
+          <div class="w3-card w3-center">
+              <img src="report_images/image016.png" alt="Total numbers of venue types per cluster">
+              <h6>Total numbers of venue types per cluster</h6>
+          </div>
+
+          <div class="w3-container">
+              <h5>3.2.2.2 Plotting</h5>
+              <p>I plotted the crime rates, divided into three categories, low, medium and high, on a map of London. On top of that I plotted the clusters as dots.</p>
+              <p>The red dots are Fun London, the purple dots are Sensible London.</p>
+              <div class="w3-card w3-center">
+                  <img src="report_images/image017.png" alt="Map of London crime rate and clusters">
+                  <h6>Map of London crime rate and clusters</h6>
+              </div>
+              <p>As can be seen, there does appear to be some correlation between the clusters and crime rate, with Fun London being mostly in higher crime rate areas.</p>
+              <p>To test this for certain, I performed a T test. The results are in the results section.</p>
+          </div>
+      </div>
+
+      <div class="w3-panel w3-center w3-grey" id="results">
+          <h2>4. Results</h2>
+      </div>
+
+          <div class="w3-container">
+              <h3>4.1 Question 1: Results of Pearson correlation tests</h3>
+              <p>The null hypothesis is that there is no correlation between the number of total venues, or the number of each type of venues, and crime rate.</p>
+              <p>I have chosen a p value of 0.05, so p must be below that for the result to be statistically significant.</p>
+
+              <div class="w3-card w3-center">
+                  <table class="w3-table-all w3-hoverable">
+                      <tr>
+                          <th>Venues</th>
+                          <th>Correlation Coefficient</th>
+                          <th>p value</th>
+                      </tr>
+                      <tr>
+                          <td>Arts</td>
+                          <td>0.608</td>
+                          <td>0.0</td>
+                      </tr>
+                      <tr>
+                          <td>Outdoors</td>
+                          <td>0.405</td>
+                          <td>0.021</td>
+                      </tr>
+                      <tr>
+                          <td>Study</td>
+                          <td>0.54</td>
+                          <td>0.001</td>
+                      </tr>
+                      <tr>
+                          <td>Social and Religious</td>
+                          <td>0.631</td>
+                          <td>0.0</td>
+                      </tr>
+                      <tr>
+                          <td>Total Venues</td>
+                          <td>0.563</td>
+                          <td>0.001</td>
+                      </tr>
+                  </table>
+              </div>
+              <p>From this we can <strong>reject</strong> the null hypothesis.</p>
+              <p><strong>There is a correlation between numbers of venues, and numbers of types of venues and crime rate.</strong></p>
+              <p>This correlation is <strong>positive</strong>, the more of each type of venue, the higher the crime rate.</p>
+              <p>It seems to be a fairly strong correlation, especially for arts venues and social and religious venues, with a correlation coefficient of approximately 0.6.</p>
+              <p>The coefficient for study venues is lower at 0.54, and lower still for outdoor venues at 0.405.</p>
+          </div>
+
+          <div class="w3-container">
+              <h3>4.2 Question 2: Results of T test</h3>
+              <p>The null hypothesis is that there is no difference between the mean crime rates for the two clusters.</p>
+              <p>The T test statistic was 3.377, with a p value of 0.002.</p>
+              <p>As p is smaller than 0.05, the null hypothesis is <strong>rejected</strong>.</p>
+              <p><strong>There is a difference between the mean crime rates of the two clusters.</strong></p>
+              <p>From the map, Fun London has a higher crime rate than Sensible London.</p>
+          </div>
+
+          <div class="w3-container">
+              <h3>4.3 Results Overview</h3>
+              <p>I have shown a positive correlation between the total number of venues and crime rates, and between the numbers of all types of venues and crime rates.</p>
+              <p>I have also shown a positive correlation between the types of venues in Fun London (music venues, theatres and art galleries) and crime rates.</p>
+              <p>However, it is very important to remember that correlation is not the same as causation, as is discussed below.</p>
+          </div>
+
+
+       <div class="w3-panel w3-center w3-grey" id="discuss">
+          <h2>5. Discussion</h2>
+      </div>
+
+      <div class="w3-container">
+          <p>So, having shown a correlation between the numbers of venues and crime rate, does this mean to reduce crime we should demolish amenities?</p>
+          <p>Clearly that sounds ridiculous. </p>
+          <p>Just because I have shown that two things are correlated, it does not mean that one caused the other.</p>
+          <p>In this case, I would say that it is highly unlikely to be true.</p>
+          <p>While it was interesting to try this approach, there are many other factors that impact on crime rates, such as poverty or drug use.</p>
+          <p>It may also be my list of venues was too broad, and I really needed to be able to focus on places intended for young people such as community centres or youth clubs, which was not possible at this time. Perhaps I also needed to focus more specifically on the types of crime committed by younger people. Were I to try this again, that is how I would set it up in the future.</p>
+          <p>I also found a correlation between the types of venues in Fun London (more music venues, theatres and art galleries) and a higher crime rate, and between the types of venues in Sensible London (more gyms, sports fields and colleges) and lower crime rates.</p>
+          <p>In this case correlation may indeed be causation! But perhaps not quite in the way this study meant.</p>
+          <p>It can be seen that, actually, Fun London has even more Study type venues than Sensible London does, just in different proportions to Art type venues, so adding more study venues to make Fun London more 'sensible' isn't the answer to reducing crime rates.</p>
+          <p>I suspect that the venues in Sensible London are not keeping crime rates lower by providing 'things to do' for young people who might otherwise be out committing crimes, but that the venues in Fun London are instead providing more opportunities for crime. Those 'fun' venues are likely attracting visitors from outside the area. </p>
+          <p>From the map, it is clear that Fun London is really Central London, which has a large number of tourists and visitors, bars, clubs, pubs etc.</p>
+          <p>Tourists are more likely to be victims of crimes, as are people slightly the worse for wear at music venues and theatres!</p>
+          <p>Perhaps to reduce crime, without tearing down venues providing vital income, patrols in these areas need to be increased.</p>
+      </div>
+
+      <div class="w3-panel w3-center w3-grey" id="conclusion">
+          <h2>6. Conclusion and Future Direction</h2>
+      </div>
+
+      <div class="w3-container">
+          <p>The main lesson from this is that causes behind crime rates are more complicated than can be easily discovered by simply looking at one factor.</p>
+          <p>If I or someone else were to examine this again in the future, I would suggest refining the study to specific types of venues most suitable for young people, and those types of crime committed mostly by young people. I would also suggest using a different data source for the venue data. If the study was looking only at community and youth clubs, perhaps the data could come from the local authorities.</p>
+      </div>
+
+    <div class="w3-container w3-grey">
+          <p>This has been my capstone project for the Applied Data Science Course by IBM/Coursera. If you wish to see the code I used to get these results, it can be found on <a href="https://github.com/RatatoskRagnarok/Coursera_Capstone/blob/master/final_project/London_boroughs_crime.ipynb">my Github</a>. </p>
+        <p>Thanks for reading.</p>
+      </div>
+
+
+  </div>
+
+
+  </body>
+</html>
